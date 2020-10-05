@@ -6,10 +6,11 @@ import hashlib
 import binascii
 import itertools
 
-MATRIX_SIZE = [3,3]
+MATRIX_SIZE = [3, 3]
 MAX_LEN = MATRIX_SIZE[0]*MATRIX_SIZE[1]
 MIN_POSITIONS_NUMBER = 3
 FOUND = multiprocessing.Event()
+
 
 def lookup(param):
     global FOUND
@@ -29,7 +30,8 @@ def lookup(param):
             return None
         pattern = ''.join(str(v) for v in item)
         # convert the pattern to hex (so the string '123' becomes '\x01\x02\x03')
-        key = binascii.unhexlify(''.join('%02x' % (ord(c) - ord('0')) for c in pattern))
+        key = binascii.unhexlify(
+            ''.join('%02x' % (ord(c) - ord('0')) for c in pattern))
         # compute the hash for that key
         sha1 = hashlib.sha1(key).hexdigest()
         # pattern found
@@ -38,6 +40,7 @@ def lookup(param):
             return pattern
     # pattern not found
     return None
+
 
 def show_pattern(pattern):
     """
@@ -51,31 +54,34 @@ def show_pattern(pattern):
         gesture[int(i)] = cont
         cont += 1
 
-    print "[+] Gesture:\n"
+    print("[+] Gesture:\n")
 
     for i in range(0, 3):
         val = [None, None, None]
         for j in range(0, 3):
-            val[j] = " " if gesture[i * 3 + j] is None else str(gesture[i * 3 + j])
+            val[j] = " " if gesture[i * 3 +
+                                    j] is None else str(gesture[i * 3 + j])
 
-        print '  -----  -----  -----'
-        print '  | %s |  | %s |  | %s |  ' % (val[0], val[1], val[2])
-        print '  -----  -----  -----'
+        print('  -----  -----  -----')
+        print('  | %s |  | %s |  | %s |  ' % (val[0], val[1], val[2]))
+        print('  -----  -----  -----')
+
 
 def crack(target_hash):
     ncores = multiprocessing.cpu_count()
     pool = multiprocessing.Pool(ncores)
     # generates the matrix positions IDs
     positions = [i for i in range(MAX_LEN)]
-    
+
     # sets the length for each worker
-    generate_worker_params = lambda x: [x, target_hash, positions]
-    params = [generate_worker_params(i) for i in range(MIN_POSITIONS_NUMBER, MAX_LEN + 1)]
-    
-    result = pool.map(lookup,params)
+    def generate_worker_params(x): return [x, target_hash, positions]
+    params = [generate_worker_params(i) for i in range(
+        MIN_POSITIONS_NUMBER, MAX_LEN + 1)]
+
+    result = pool.map(lookup, params)
     pool.close()
     pool.join()
-    
+
     ret = None
     for r in result:
         if r is not None:
@@ -83,38 +89,43 @@ def crack(target_hash):
             break
     return ret
 
-def main():
-    print ''
-    print '################################'
-    print '# Android Pattern Lock Cracker #'
-    print '#             v0.2             #'
-    print '# ---------------------------- #'
-    print '#  Written by Chema Garcia     #'
-    print '#     http://safetybits.net    #'
-    print '#     chema@safetybits.net     #'
-    print '#          @sch3m4             #'
-    print '################################\n'
 
-    print '[i] Taken from: http://forensics.spreitzenbarth.de/2012/02/28/cracking-the-pattern-lock-on-android/\n'
-    
+def main():
+    print('')
+    print('################################')
+    print('# Android Pattern Lock Cracker #')
+    print('#             v0.2             #')
+    print('# ---------------------------- #')
+    print('#  Written by Chema Garcia     #')
+    print('#     http://safetybits.net    #')
+    print('#     chema@safetybits.net     #')
+    print('#          @sch3m4             #')
+    print('################################\n')
+
+    print('[i] Taken from: http://forensics.spreitzenbarth.de/2012/02/28/cracking-the-pattern-lock-on-android/\n')
+
     # check parameters
     if len(sys.argv) != 2:
-        print '[+] Usage: %s /path/to/gesture.key\n' % sys.argv[0]
+        print('[+] Usage: %s /path/to/gesture.key\n' % sys.argv[0])
         sys.exit(0)
-    
+
     # check gesture.key file
     if not os.path.isfile(sys.argv[1]):
-        print "[e] Cannot access to %s file\n" % sys.argv[1]
+        print("[e] Cannot access to %s file\n" % sys.argv[1])
         sys.exit(-1)
-        
+
     # load SHA1 hash from file
-    f = open(sys.argv[1], 'rb')
-    gest = f.read(hashlib.sha1().digest_size).encode('hex')
+    #f = open(sys.argv[1], 'rb')
+    #gest = f.read(hashlib.sha1().digest_size).encode('hex')
+
+    with open(sys.argv[1], "rb") as f:
+        gest = f.read(hashlib.sha1().digest_size).hex()
+
     f.close()
 
     # check hash length
     if len(gest) / 2 != hashlib.sha1().digest_size:
-        print "[e] Invalid gesture file?\n"
+        print("[e] Invalid gesture file?\n")
         sys.exit(-2)
 
     # try to crack the pattern
@@ -123,17 +134,19 @@ def main():
     t1 = time.time()
 
     if pattern is None:
-        print "[:(] The pattern was not found..."
+        print("[:(] The pattern was not found...")
         rcode = -1
     else:
-        print "[:D] The pattern has been FOUND!!! => %s\n" % pattern
+        print("[:D] The pattern has been FOUND!!! => %s\n" % pattern)
         show_pattern(pattern)
-        print ""
-        print "It took: %.4f seconds" % (t1-t0)
+        print("")
+        print("It took: %.4f seconds" % (t1-t0))
         rcode = 0
 
     sys.exit(rcode)
 
+
 if __name__ == "__main__":
     main()
-    
+
+# https://stackoverflow.com/questions/55549064/cannot-encode-sha1-to-hex-using-hashlib-in-python3
