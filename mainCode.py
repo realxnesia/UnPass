@@ -94,29 +94,31 @@ def main():
     print('')
     print('################################')
     print('# Android Pattern Lock Cracker #')
-    print('#             v0.2             #')
+    print('#             v1.0             #')
     print('# ---------------------------- #')
-    print('#  Written by Chema Garcia     #')
-    print('#     http://safetybits.net    #')
+    print('#    Script by Chema Garcia    #')
+    print('#     Modified by unpass       #')
     print('#     chema@safetybits.net     #')
-    print('#          @sch3m4             #')
+    print('#         @realxnesia          #')
     print('################################\n')
 
-    print('[i] Taken from: http://forensics.spreitzenbarth.de/2012/02/28/cracking-the-pattern-lock-on-android/\n')
+    #print('[i] Taken from: http://forensics.spreitzenbarth.de/2012/02/28/cracking-the-pattern-lock-on-android/\n')
 
     # check parameters
     if len(sys.argv) != 2:
+        sys.stdout = open("logs.txt","a")
         print('[+] Usage: %s /path/to/gesture.key\n' % sys.argv[0])
         sys.exit(0)
+        sys.stdout.close()
 
     # check gesture.key file
     if not os.path.isfile(sys.argv[1]):
+        sys.stdout = open("logs.txt","a")
+        print("[!] ERROR")
         print("[e] Cannot access to %s file\n" % sys.argv[1])
+        print("[!] Make sure you save the gesture file along with the script folder(!)")
         sys.exit(-1)
-
-    # load SHA1 hash from file
-    #f = open(sys.argv[1], 'rb')
-    #gest = f.read(hashlib.sha1().digest_size).encode('hex')
+        sys.stdout.close()
 
     with open(sys.argv[1], "rb") as f:
         gest = f.read(hashlib.sha1().digest_size).hex()
@@ -125,8 +127,11 @@ def main():
 
     # check hash length
     if len(gest) / 2 != hashlib.sha1().digest_size:
+        sys.stdout = open("logs.txt","a")
+        print("[!] ERROR")
         print("[e] Invalid gesture file?\n")
         sys.exit(-2)
+        sys.stdout.close
 
     # try to crack the pattern
     t0 = time.time()
@@ -134,19 +139,22 @@ def main():
     t1 = time.time()
 
     if pattern is None:
-        print("[:(] The pattern was not found...")
+        sys.stdout = open("logs.txt","a")
+        print(" ")
+        print("[!] The pattern was not found...")
         rcode = -1
+        sys.stdout.close()
     else:
-        print("[:D] The pattern has been FOUND!!! => %s\n" % pattern)
+        sys.stdout = open("logs.txt","a")
+        print(" ")
+        print("[*] The pattern has been FOUND!!! => %s\n" % pattern)
         show_pattern(pattern)
         print("")
         print("It took: %.4f seconds" % (t1-t0))
         rcode = 0
+        sys.stdout.close()
 
     sys.exit(rcode)
 
-
 if __name__ == "__main__":
     main()
-
-# https://stackoverflow.com/questions/55549064/cannot-encode-sha1-to-hex-using-hashlib-in-python3

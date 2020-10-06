@@ -1,0 +1,19 @@
+Device Name  :Lenovo a6000+
+Description  :Second Evidence
+Version  :Kitkat
+ 
+[*] The pattern has been FOUND!!! => 210345876
+
+[+] Gesture:
+
+  -----  -----  -----
+  | 3 |  | 2 |  | 1 |  
+  -----  -----  -----
+  -----  -----  -----
+  | 4 |  | 5 |  | 6 |  
+  -----  -----  -----
+  -----  -----  -----
+  | 9 |  | 8 |  | 7 |  
+  -----  -----  -----
+
+It took: 2.4148 seconds

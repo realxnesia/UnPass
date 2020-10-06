@@ -9,17 +9,18 @@ def save_info():
     Version_info = c.get()
     #print(DeviceName_info, Description_info)
 
-    file = open("log.txt", "w")
+    file = open("logs.txt", "w")
     space = str("\n")
-    file.write("DeviceName  :" + DeviceName_info )
+    file.write("Device Name  :" + DeviceName_info )
     file.write(space)
-    file.write("Description :" + Description_info)
+    file.write("Description  :" + Description_info)
     file.write(space)
-    file.write("Version     :" + Version_info)
+    file.write("Version  :" + Version_info)
+    file.write(space)
     file.close()
 
-    Device_entry.delete(0, END)
-    Description_entry.delete(0, END)
+    #Device_entry.delete(0, END)
+    #Description_entry.delete(0, END)
 
 def call_back():
     os.system('python3 Process.py')
@@ -68,4 +69,3 @@ if __name__ == '__main__':
 
 
     root.mainloop()
-    #https://www.youtube.com/watch?v=CKeFRDXYwcA
