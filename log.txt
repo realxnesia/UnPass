@@ -1,0 +1,3 @@
+DeviceName :Asus
+Description :Hacker Phone
+Version     :Kitkat
